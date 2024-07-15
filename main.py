@@ -11,20 +11,24 @@ option = streamlit.selectbox("Select data to view:",
                              ("Temperature", "Sky"))
 streamlit.subheader(f"{option} for the next {days} days in {place}")
 
-if place:
-    # Get the Temperature/Sky data
-    filtered_data = get_data(place, days)
+try:
+    if place:
+        # Get the Temperature/Sky data
+        filtered_data = get_data(place, days)
 
-    if option == "Temperature":
-        temperatures = [dict["main"]["temp"] for dict in filtered_data]
-        dates = [dict["dt_txt"] for dict in filtered_data]
-        # Create Temperature Plot
-        figure = px.line(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature (C)"})
-        streamlit.plotly_chart(figure)
+        if option == "Temperature":
+            temperatures = [dict["main"]["temp"] for dict in filtered_data]
+            dates = [dict["dt_txt"] for dict in filtered_data]
+            # Create Temperature Plot
+            figure = px.line(x=dates, y=temperatures, labels={"x": "Date", "y": "Temperature (C)"})
+            streamlit.plotly_chart(figure)
 
-    if option == "Sky":
-        images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
-                  "Rain": "images/rain.png", "Snow": "images/snow.png"}
-        sky_conditions = [dict["weather"][0]["main"] for dict in filtered_data]
-        image_paths = [images[condition] for condition in sky_conditions]
-        streamlit.image(image_paths, width=110)
+        if option == "Sky":
+            images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
+                      "Rain": "images/rain.png", "Snow": "images/snow.png"}
+            sky_conditions = [dict["weather"][0]["main"] for dict in filtered_data]
+            image_paths = [images[condition] for condition in sky_conditions]
+            streamlit.image(image_paths, width=110)
+
+except KeyError:
+    streamlit.info("Hey! You entered a non-existing place. Please enter again")
